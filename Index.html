@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <base target="_top">
+  <?!= include('Styles'); ?>
+</head>
+<body>
+  <main class="app" aria-live="polite">
+    <header class="brand"><span class="brand-mark">НК</span><div><strong>НК-строй</strong><small>Контроль файлов по объектам</small></div></header>
+    <div id="toast" class="toast" role="status" hidden></div>
+    <div id="loading" class="loading"><span class="spinner"></span><span>Загружаем данные…</span></div>
+
+    <section id="step-1" class="screen" hidden>
+      <p class="progress">Шаг 1 из 4</p><div class="progress-track"><i style="width:25%"></i></div>
+      <h1>Кто загружает файлы?</h1><p class="lead">Выберите себя из списка действующих прорабов.</p>
+      <div id="foremen" class="cards"></div><div id="foremen-empty" class="empty" hidden>Действующие прорабы не найдены.</div>
+      <div class="actions one"><button id="foreman-next" class="primary" disabled>Дальше</button></div>
+    </section>
+
+    <section id="step-2" class="screen" hidden>
+      <p class="progress">Шаг 2 из 4</p><div class="progress-track"><i style="width:50%"></i></div>
+      <h1>Выберите объект</h1><p id="objects-caption" class="lead"></p>
+      <div id="objects" class="cards"></div><div id="objects-empty" class="empty" hidden>У прораба нет действующих объектов.</div>
+      <div class="actions"><button id="objects-back" class="secondary">Назад</button><button id="object-next" class="primary" disabled>Дальше</button></div>
+    </section>
+
+    <section id="step-3" class="screen" hidden>
+      <p class="progress">Шаг 3 из 4</p><div class="progress-track"><i style="width:75%"></i></div>
+      <h1>Файлы по объекту</h1><div id="object-summary" class="summary"></div>
+      <div id="requirements"></div><div id="requirements-empty" class="empty" hidden>Обязательные позиции не найдены.</div>
+      <div class="actions"><button id="files-back" class="secondary">Назад</button><button id="confirm-next" class="primary" disabled>Продолжить</button></div>
+    </section>
+
+    <section id="step-4" class="screen" hidden>
+      <p class="progress">Шаг 4 из 4</p><div class="progress-track"><i style="width:100%"></i></div>
+      <h1>Проверьте данные перед отправкой</h1><div id="confirm-summary" class="summary"></div><div id="confirmation"></div>
+      <div id="sending" class="sending" hidden><span class="spinner"></span><strong>Отправляем файлы. Не закрывайте страницу.</strong></div>
+      <div class="actions"><button id="confirm-back" class="secondary">Назад к файлам</button><button id="send" class="primary">Подтвердить и отправить</button></div>
+    </section>
+
+    <section id="result" class="screen" hidden>
+      <div class="result-icon">✓</div><h1>Файлы загружены</h1><div id="result-summary" class="metrics"></div><div id="result-items"></div>
+      <div class="result-actions"><button id="continue-object" class="primary">Продолжить работу с этим объектом</button><button id="other-object" class="secondary">Выбрать другой объект</button><button id="restart" class="text-button">Начать сначала</button></div>
+    </section>
+  </main>
+  <?!= include('Scripts'); ?>
+</body>
+</html>
