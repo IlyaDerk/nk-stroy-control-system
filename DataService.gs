@@ -86,7 +86,13 @@ function getObjectState(objectId, foremanId) {
     }).map(function (row) {
       return { id: String(value_(table, row, 'ID обязательного файла')), stage: String(value_(table, row, 'Этап работ')), name: String(value_(table, row, 'Наименование обязательного файла')), category: String(value_(table, row, 'Категория файла')), status: String(value_(table, row, 'Статус')), typeId: String(value_(table, row, 'ID типа файла')) };
     });
-    return { foreman: foreman, object: object, requirements: rows, maxFileSizeMb: CONFIG.MAX_FILE_SIZE_MB };
+    return {
+      foreman: foreman,
+      object: object,
+      requirements: rows,
+      maxFileSizeMb: CONFIG.MAX_FILE_SIZE_MB,
+      maxRequirementTotalSizeMb: CONFIG.MAX_REQUIREMENT_TOTAL_SIZE_MB
+    };
   });
 }
 

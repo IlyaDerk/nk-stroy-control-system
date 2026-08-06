@@ -8,6 +8,9 @@ var CONFIG = Object.freeze({
   }),
   MAX_FILE_SIZE_MB: 10,
   MAX_FILE_SIZE_BYTES: 10 * 1024 * 1024,
+  MAX_REQUIREMENT_TOTAL_SIZE_MB: 25,
+  MAX_REQUIREMENT_TOTAL_SIZE_BYTES: 25 * 1024 * 1024,
+  DATE_TIME_FORMAT: 'dd.MM.yyyy HH:mm:ss',
   HEADER_ROW: 2,
   SHEETS: Object.freeze({
     FOREMEN: 'Справочник прорабов',

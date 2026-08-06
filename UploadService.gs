@@ -23,6 +23,10 @@ function uploadRequirementFilesLocked_(payload) {
   if (value_(table, row, 'Статус') !== CONFIG.STATUS.MISSING) throw new Error('Эта обязательная позиция уже предоставлена.');
   var requirement = { id: String(value_(table, row, 'ID обязательного файла')), stage: String(value_(table, row, 'Этап работ')), name: String(value_(table, row, 'Наименование обязательного файла')) };
   var decoded = payload.files.map(validateAndDecodeFile_);
+  var totalSize = decoded.reduce(function (sum, file) { return sum + file.bytes.length; }, 0);
+  if (totalSize > CONFIG.MAX_REQUIREMENT_TOTAL_SIZE_BYTES) {
+    throw new Error('Общий размер файлов позиции превышает допустимые ' + CONFIG.MAX_REQUIREMENT_TOTAL_SIZE_MB + ' МБ.');
+  }
   var folder = getRequirementFolder_(object, requirement);
   var created = [];
   try {
@@ -30,14 +34,25 @@ function uploadRequirementFilesLocked_(payload) {
       created.push(folder.createFile(Utilities.newBlob(file.bytes, file.mimeType, file.name)));
     });
   } catch (error) {
-    created.forEach(function (file) { try { file.setTrashed(true); } catch (ignored) {} });
+    trashFiles_(created);
     throw new Error('Не удалось сохранить все файлы позиции. Созданные в этой попытке файлы удалены. ' + error.message);
   }
-  var timestamp = Utilities.formatDate(new Date(), CONFIG.TIMEZONE, 'dd.MM.yyyy HH:mm:ss');
+  var timestamp = new Date();
   var updates = { 'Статус': CONFIG.STATUS.PROVIDED, 'Дата предоставления': timestamp, 'Кто загрузил': foreman.name, 'Ссылка на материалы': folder.getUrl(), 'Дата обновления': timestamp };
-  Object.keys(updates).forEach(function (header) { table.sheet.getRange(found.rowNumber, table.headers[header] + 1).setValue(updates[header]); });
-  SpreadsheetApp.flush();
+  var updatedRow = row.slice();
+  Object.keys(updates).forEach(function (header) { updatedRow[table.headers[header]] = updates[header]; });
+  try {
+    table.sheet.getRange(found.rowNumber, 1, 1, updatedRow.length).setValues([updatedRow]);
+    SpreadsheetApp.flush();
+  } catch (error) {
+    trashFiles_(created);
+    throw new Error('Не удалось обновить строку в Google Sheets. Созданные в этой попытке файлы удалены. ' + error.message);
+  }
   return { requirementId: requirement.id, requirementName: requirement.name, uploadedFileCount: created.length, folderUrl: folder.getUrl() };
+}
+
+function trashFiles_(files) {
+  files.forEach(function (file) { try { file.setTrashed(true); } catch (ignored) {} });
 }
 
 function validateAndDecodeFile_(file) {

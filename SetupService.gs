@@ -51,6 +51,8 @@ function setupDemoProject() {
     PropertiesService.getScriptProperties().setProperties({
       SPREADSHEET_ID: spreadsheet.getId(), ROOT_FOLDER_ID: rootFolder.getId()
     }, false);
+    console.log('Таблица: ' + spreadsheet.getUrl());
+    console.log('Папка Google Drive: ' + rootFolder.getUrl());
     return {
       message: 'Демонстрационный проект успешно настроен.',
       spreadsheetUrl: spreadsheet.getUrl(),
@@ -86,6 +88,12 @@ function writeDemoSheets_(spreadsheet) {
     sheet.getRange(CONFIG.HEADER_ROW, 1, 1, definition[2].length).setValues([definition[2]]).setFontWeight('bold').setBackground('#dbeafe');
     var rows = seed[definition[0]];
     if (rows.length) sheet.getRange(CONFIG.HEADER_ROW + 1, 1, rows.length, definition[2].length).setValues(rows);
+    if (definition[0] === 'REQUIREMENTS') {
+      ['Дата предоставления', 'Дата обновления'].forEach(function (header) {
+        var column = definition[2].indexOf(header) + 1;
+        sheet.getRange(CONFIG.HEADER_ROW + 1, column, Math.max(rows.length, 1), 1).setNumberFormat(CONFIG.DATE_TIME_FORMAT);
+      });
+    }
     sheet.setFrozenRows(CONFIG.HEADER_ROW);
     sheet.autoResizeColumns(1, definition[2].length);
   });
